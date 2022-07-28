@@ -10,14 +10,17 @@
 
 
 # ---------------------------------------------------------------------------
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import csv
 
-def match():
+def match( root : str, root_file :str)->int:
+    '''
+    Get two root folder pathes to compare and check if the files are present in the dataset
+    '''
+
     df1 = pd.read_excel('./Embryoscope Image List 1-27-22.csv')
     df2 = pd.read_csv('./Bias EmbryoScope Data 4-29-22.csv')
     # print(df.head())
@@ -28,8 +31,11 @@ def match():
         for x in df1.Name:
             if (y==x):
                i+=1
+
+
     print(length)
     print(f"{i}")
+
 
 def read():
     with open("./char.csv", encoding='utf-8') as csv_file:
@@ -94,6 +100,9 @@ def reed_hist():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+
+
+
     reed_pand()
     reed_hist()
 
