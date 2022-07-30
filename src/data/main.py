@@ -17,25 +17,34 @@ import seaborn as sns
 import csv
 
 def match( root : str, root_file :str)->int:
+
     '''
-    Get two root folder pathes to compare and check if the files are present in the dataset
+    Get two root folder pathes to compare and check if the files are present in the dataset.
+    if there are any mis matches create a new excel sheet without the missing files/images.
     '''
 
-    df1 = pd.read_excel('./Embryoscope Image List 1-27-22.csv')
-    df2 = pd.read_csv('./Bias EmbryoScope Data 4-29-22.csv')
+    df1 = pd.read_excel(root)
+    df2 = pd.read_csv(root_file)
     # print(df.head())
     i =0
+
     length = len(df2["EmbryoScope Image ID"])
     for y in df2["EmbryoScope Image ID"]:
         # print (y)
+        flag = 0
         for x in df1.Name:
             if (y==x):
                i+=1
+               flag = 1
+        if flag==0:
+            dfb = df2.drop(df2[df2["EmbryoScope Image ID"] == y].index)
 
+    print(len(df2))
+    dfb.to_excel('../../data/txt_files/Bias_Study.xlsx')
 
     print(length)
     print(f"{i}")
-
+    return length
 
 def read():
     with open("./char.csv", encoding='utf-8') as csv_file:
@@ -43,6 +52,7 @@ def read():
         next(csv_reader)
         for row in csv_reader:
             print (row)
+
 def reed_pand():
     # df = pd.read_csv('./Bias EmbryoScope Data 4-29-22.csv', encoding='utf-8')
     # print(df.head(0))
@@ -95,15 +105,16 @@ def reed_hist():
     plt.tight_layout()
     plt.show()
 
-
-
-
 # Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
 
+    f1 = ('../../data/txt_files/Embryoscope Image List 1-27-22.csv')
+    f2 = ('../../data/txt_files/Bias EmbryoScope Data 4-29-22.csv')
 
+    match(f1,f2)
 
-    reed_pand()
-    reed_hist()
+    # reed_pand()
+    # reed_hist()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
