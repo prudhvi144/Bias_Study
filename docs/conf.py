@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Bias_Embryo_Study documentation build configuration file, created by
-# sphinx-quickstart.
+
 #
 # This file is execfile()d with the current directory set to its containing dir.
 #

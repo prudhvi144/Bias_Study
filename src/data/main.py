@@ -15,36 +15,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import csv
-
-def match( root : str, root_file :str)->int:
-
-    '''
-    Get two root folder pathes to compare and check if the files are present in the dataset.
-    if there are any mis matches create a new excel sheet without the missing files/images.
-    '''
-
-    df1 = pd.read_excel(root)
-    df2 = pd.read_csv(root_file)
-    # print(df.head())
-    i =0
-
-    length = len(df2["EmbryoScope Image ID"])
-    for y in df2["EmbryoScope Image ID"]:
-        # print (y)
-        flag = 0
-        for x in df1.Name:
-            if (y==x):
-               i+=1
-               flag = 1
-        if flag==0:
-            dfb = df2.drop(df2[df2["EmbryoScope Image ID"] == y].index)
-
-    print(len(df2))
-    dfb.to_excel('../../data/txt_files/Bias_Study.xlsx')
-
-    print(length)
-    print(f"{i}")
-    return length
+import numpy as np
 
 def read():
     with open("./char.csv", encoding='utf-8') as csv_file:
@@ -52,7 +23,6 @@ def read():
         next(csv_reader)
         for row in csv_reader:
             print (row)
-
 def reed_pand():
     # df = pd.read_csv('./Bias EmbryoScope Data 4-29-22.csv', encoding='utf-8')
     # print(df.head(0))
@@ -105,14 +75,152 @@ def reed_hist():
     plt.tight_layout()
     plt.show()
 
+
+
+
+def get_implantation(file_path:str,bias_char:str):
+
+    df = pd.read_csv(file_path, encoding='utf-8')
+    ncols = len(df.columns)
+    df1 = df[df["Known Outcome? 1=Yes, 0=No"] == 1]
+    print(df1)
+    txt_implantation = df1[["EmbryoScope Image ID", "PREG" , bias_char]]
+    print (txt_implantation)
+    x = txt_implantation[bias_char].value_counts(ascending=True)
+
+
+
+
+    a = x.values.tolist()
+    b = x.index.values.tolist()
+
+    arr_count = (np.vstack((a, b)).T)
+    num_cat = len (arr_count)
+    # print (arr_count)
+    print ("Number of catogories = " + str (num_cat))
+
+    Test_set_size_min = 70
+    Test_set_size_max = 300
+
+    Per_cat= Test_set_size_min//num_cat
+
+    print (Per_cat)
+
+    dfb =txt_implantation
+    for i ,j in arr_count:
+        if int(i) >= 40 :
+            print (i,j)
+            break
+        else:
+            y = j
+            dfb = dfb.drop(dfb[dfb[bias_char] == y].index)
+
+
+    x = dfb[bias_char].value_counts(ascending=True)
+    print (x)
+    return dfb
+
+def make_txt_type_1(,bias_char):
+
+    print (dfb)
+
+    x = dfb[bias_char].value_counts(ascending=True)
+    a = x.values.tolist()
+    b = x.index.values.tolist()
+
+    print (a)
+    print (b)
+    root = "../../data/raw/"
+    for i in b:
+        temp = dfb[(dfb[bias_char] == i)]
+        xx = temp[bias_char].value_counts(ascending=True)
+        shuffled = temp.sample(frac=1).reset_index()
+        print (len(shuffled.index))
+
+        file_name = shuffled.values.tolist()
+        Train_list = shuffled.values.tolist() [0:int(0.7*len(shuffled.index))]
+        Val_list = shuffled.values.tolist() [int(0.7*len(shuffled.index)):int(0.9*len(shuffled.index))]
+        Test_list = shuffled.values.tolist() [int(0.9*len(shuffled.index)):int(len(shuffled.index))]
+
+        for f in Train_list:
+            print (f)
+
+            with open('../../data/txt_files/' + bias_char+ 'Train' + ".txt", 'a') as the_file:
+                  the_file.write(root + str(f[1])+ " " + str(f[2]) + " " + '\n')
+        for f in Val_list:
+            print (f)                                                        
+
+            with open('../../data/txt_files/' + bias_char+ 'Val' + ".txt", 'a') as the_file:
+                  the_file.write(root + str(f[1])+ " " + str(f[2]) + " " + '\n')
+        for f in Test_list:
+            print (f)
+
+            with open('../../data/txt_files/' + bias_char + 'Test'+ ".txt", 'a') as the_file:
+                  the_file.write(root + str(f[1])+ " " + str(f[2]) + " " + '\n')
+
+
+
+
+
+
+
+
+
+    # xy = dfb.groupby('Sperm Source Race', group_keys=False).apply(lambda x: x.sample(frac=0.9))
+    # print (xy)
+    root = "./data/"
+    file_name = dfb.values.tolist()
+    # print (file_name)
+    # for f in file_name:
+    #     print (f)
+    #     with open('./txt/' + "_train" + ".txt", 'a') as the_file:
+    #          the_file.write(root + f[0]+ " " + str(f[1]) + " " + '\n')
+
+
+    # file_name = df["EmbryoScope Image ID"].tolist()
+    # impl = df["EmbryoScope Image ID"].tolist()
+    # file_name = txt_implantation.values.tolist()
+
+
+
+    # print(file_name)
+    # root = './data/'
+    # df1 = txt_implantation[df["PREG"] == 0]
+    # file_name = df1.values.tolist()
+    # for f in file_name:
+    #     print (f)
+    #     with open('../../data/txt_files/' + bias_char + ".txt", 'a') as the_file:
+    #          the_file.write(root + f[0]+ " " + str(f[1]) + " " + '\n')
+
+    # f = open('./txt/' + "_train" + ".txt", 'a')
+    # f.writelines(['\n', str(df["EmbryoScope Image ID"]), ' ',str(df["Known Outcome? 1=Yes, 0=No"]) ])
+    # f.close()
+
+        # with open('./data/embryo/' + "_train" + ".txt", 'a') as the_file:
+            # with open('../data/sd1/val.txt', 'a') as the_file:
+            # the_file.write(data_dir_path+img_name+" "+img_name+'\n')
+            # the_file.write(source_data_dir_path + classes + "/" + img_name + " " + str(int(classes) - 1) + " " + '0' + '\n')
 # Press the green button in the gutter to run the script.
 
 if __name__ == '__main__':
 
-    f1 = ('../../data/txt_files/Embryoscope Image List 1-27-22.csv')
-    f2 = ('../../data/txt_files/Bias EmbryoScope Data 4-29-22.csv')
+    # f1 = ('../../data/txt_files/Embryoscope Image List 1-27-22.csv')
+    # f2 = ('../../data/txt_files/Bias EmbryoScope Data 4-29-22.csv')
+    # match(f1,f2)
+    # f1 = ('../../data/txt_files/Sperm Source RaceTrain.txt')
+    #
+    # f2 = ('../../data/txt_files/Sperm Source RaceVal.txt')
+    # match(f1,f2)
+    matched = ('../../data/txt_files/Bias_Study.csv')
+    bias_distrubution = 'Sperm Source Race'
+    # match(f1,f2)
+    get = get_implantation(matched,bias_distrubution)
+    make_txt_type_1(get,bias_distrubution)
 
-    match(f1,f2)
+
+
+
+
 
     # reed_pand()
     # reed_hist()

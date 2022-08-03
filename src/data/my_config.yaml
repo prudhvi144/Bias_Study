@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#---------------------------------------------------------------------------------------------------------------------
+# Created By  : Prudhvi Thirumalaraju
+# Created Date: 08/01/2022
+# version ='1.0'
+# --------------------------------------------------------------------------------------------------------------------
+
+#Experment Char
+
+
+Sampling: ['Proportionate sampling','Disproportionate sampling','Disproportionate sampling with add_data']
+
+Bias_char: ['Sperm Source Race', 'Sperm Source','Sperm Quality (1=Great, 4=Poor)','Egg Source Race', 'Oocyte Source', 'Prior Pregnancies',
+     'DIAGNOSIS', 'Cycle STIMULATION Regimen', 'Insemination Method','Transfer Type']
+
+Bias_numerical: ['Ejaculated Semen Volume',
+       'Ejaculated Sperm Concentration (Million/ml)',
+       'Ejaculated Sperm Motility %', 'Ejaculated Total Motile Count',
+       'Gravidity', 'HeightInches',
+       'WeightPounds', 'BMI', 'MaxFSH', 'AMHLastVal', 'IVF Date', '#Oocytes Retrieved',
+       '#Mature Oocytes', '#Normal Fertilization (2PN)',
+       'Well #']
+#---------------------------------------------------------------------------------------------------------------------
+
+#INITIAL SETTINGS
+data_directory: ../data/
+data_name: Embryo
+drop_columns: ["id"]
+target_name: class
+test_size: 0.2
+model_directory: ../models/
+model_name: KNN_classifier.pkl
+
+#------------------------------------------------------------------------------------------------------------------
+
+
