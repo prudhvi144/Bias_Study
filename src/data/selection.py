@@ -18,8 +18,6 @@ import csv
 import yaml
 import numpy as np
 
-
-
 def filter(file_path:str,bias_char:str):
 
     df = pd.read_csv(file_path, encoding='utf-8')
@@ -59,7 +57,11 @@ def stratfied(dfb,bias_char:str):
     b = x.index.values.tolist()
     root = "../../data/raw/"
     parent_dir = "../../data/txt_files/"
+    test_dir = "../../data/txt_files/Test/"
     path = os.path.join(parent_dir, bias_char)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    path = os.path.join(test_dir, bias_char)
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -77,30 +79,33 @@ def stratfied(dfb,bias_char:str):
         for f in Train_list:
             print(f)
 
-            with open('../../data/txt_files/'+bias_char+"/" + bias_char + 'Train' + ".txt", 'w') as the_file:
+            with open('../../data/txt_files/'+bias_char+"/"  + 'Train' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+bias_char+"/" + bias_char + 'Train.csv', 'a', newline='',) as file:
+            with open('../../data/txt_files/'+bias_char+"/" + 'Train.csv', 'a', newline='',) as file:
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
-
 
         for f in Val_list:
             print(f)
 
-            with open('../../data/txt_files/'+bias_char+"/" + bias_char + 'Val' + ".txt", 'a') as the_file:
+            with open('../../data/txt_files/'+bias_char+"/" + 'Val' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+bias_char+"/" + bias_char + 'Val.csv', 'a', newline='',) as file:
+            with open('../../data/txt_files/'+bias_char+"/" + 'Val.csv', 'a', newline='',) as file:
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
         for f in Test_list:
             print(f)
-
-            with open('../../data/txt_files/'+bias_char+"/" + bias_char + 'Test' + ".txt", 'a') as the_file:
+            test_dir = "../../data/txt_files/Test/"
+            path = os.path.join(test_dir, bias_char,str(f[3]))
+            if not os.path.exists(path):
+                os.makedirs(path)
+            with open('../../data/txt_files/'+bias_char+"/" + 'Test' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+bias_char+"/" + bias_char + 'Test.csv', 'a', newline='',) as file:
+            with open('../../data/txt_files/'+"Test"+"/" + bias_char +"/"+ str(f[3])+"/" +  'Test' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open('../../data/txt_files/'+"Test"+"/" + bias_char + "/" + 'Test.csv', 'a', newline='',) as file:
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
-
 
 def residual(file_path:str):
 

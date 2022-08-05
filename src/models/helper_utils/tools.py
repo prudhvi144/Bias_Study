@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from scipy.spatial.distance import cdist
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix,precision_recall_fscore_support
 import matplotlib.pyplot as plt
 
 
@@ -266,11 +266,12 @@ def validation_loss(loader, model, num_classes, logs_path, data_name='valid_sour
         # for value in range(len(all_output_numpy)):
         #     csv_writer.writerow([all_path[value], int(all_label[value].item()), predict_numpy[value]])
 
-
+    c = precision_recall_fscore_support(all_label, torch.squeeze(predict).float(),average='weighted')
     conf_mat = confusion_matrix(all_label, torch.squeeze(predict).float())
+    print (c)
     print(conf_mat)
     print(val_accuracy)
-    val_info = {"val_accuracy": val_accuracy, "val_loss": val_loss , "cm" : conf_mat}
+    val_info = {"val_accuracy": val_accuracy, "val_loss": val_loss , "cm" : conf_mat  , "pression": c[0], "recall": c[1] , "f-score": c[0]}
 
     if num_classes == 5:
         cm_bnb, acc_2_class = class_5_to2(all_label_numpy=all_label.numpy(), predict_numpy=predict_numpy)

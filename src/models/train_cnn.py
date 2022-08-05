@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Created By  : Prudhvi Thirumalaraju   Line 3
+# Created Date: 07/22/2022
+# version ='1.0'
+# ---------------------------------------------------------------------------
+""" Training scripts """
+# ---------------------------------------------------------------------------
+
+
 import argparse
 import copy
 import csv
@@ -29,8 +40,13 @@ from helper_utils.EarlyStopping import EarlyStopping
 from helper_utils.tools import testing_sperm_slides, validation_loss, calc_transfer_loss, Entropy
 
 
+CONFIG_PATH = ""
+
+
+
+
 def data_setup(config):
-    ## set pre-process
+    #set pre-process
     prep_dict = {}
     prep_config = config["prep"]
     prep_dict["source"] = prep.image_train(**config["prep"]['params_source'])
@@ -117,9 +133,9 @@ def train(config, dset_loaders):
             base_network.train(False)
 
             temp_model = nn.Sequential(base_network)
-            torch.save(temp_model,
-                       osp.join(config["model_path"],
-                                "backup/model_iter_{:05d}.pth.tar".format(itr)))
+            # torch.save(temp_model,
+            #            osp.join(config["model_path"],
+            #                     "backup/model_iter_{:05d}.pth.tar".format(itr)))
         if itr % config["test_interval"] == 0:
             itr_log = "num_iterations  " + str(itr)
             config["out_file"].write(itr_log + "\n")
@@ -136,6 +152,7 @@ def train(config, dset_loaders):
 
 
                       ,config["out_file"])
+
             temp_model = nn.Sequential(base_network)
             if val_info['val_loss'] < best_loss_valid:
                 # best_model = copy.deepcopy(temp_model)
@@ -144,6 +161,8 @@ def train(config, dset_loaders):
                 best_acc = val_info['val_accuracy']
                 # best_cm  =    val_info['conf_mat']
                 torch.save(temp_model, osp.join(config["model_path"], "best_model.pth.tar"))
+                config["out_file2"].write(str(val_info) + "\n")
+                config["out_file2"].flush()
 
                 # torch.save(best_model, osp.join(config["model_path"], "model_iter_{:05d}_model.pth.tar".format(i)))
 
@@ -151,7 +170,7 @@ def train(config, dset_loaders):
         if early_stopping.early_stop:
             print("Early stopping")
             print("Saving Model ...")
-Line 3
+
             break
 
         loss_params = config["loss"]
@@ -190,7 +209,7 @@ Line 3
             csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
             csv_writer.writerow(
-                [itr, total_loss_numpy,  classifier_loss_numpy,                  val_info['val_loss'], val_info['val_accuracy'],
+                [itr, total_loss_numpy,  classifier_loss_numpy, val_info['val_loss'], val_info['val_accuracy'],
 
                  ])
 
@@ -282,10 +301,12 @@ def parge_args():
         mode="train",
         seed=0,
         gpu_id="0",
-        dset="embryo_c",
-        s_dset_txt="../../data/txt_files/Sperm Source RaceTrain.txt",
-        sv_dset_txt="../../data/txt_files/Sperm Source RaceVal.txt",
-        test_dset_txt="../../data/txt_files/Sperm Source RaceTest.txt",
+        dset="Bias_study",
+
+
+
+        s_dset_txt="Sperm Source Race",
+
 
         s_dset="D",
 
@@ -309,9 +330,9 @@ def parge_args():
         no_of_layers_freeze=13,
         num_iterations=200000,
         patience=2000,
-        test_interval=5,
-        snapshot_interval=10,
-        output_dir="experiments"
+        test_interval=1,
+        snapshot_interval=1,
+        output_dir="../../reports"
     )
 
     args = parser.parse_args()
@@ -330,6 +351,7 @@ def main():
     # Default Project Folders#
     ####################################
 
+
     project_root = "../../"
     data_root = project_root + "data/"
     models_root = project_root + "models/"
@@ -342,11 +364,12 @@ def main():
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
     # os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
     set_deterministic_settings(seed=args.seed)
-
+    lr = args.lr
+    opt = args.optimizer
     dataset = args.dset
-
-    log_output_dir_root = args.output_dir + '/logs/' + dataset + '/'
-    models_output_dir_root = args.output_dir + '/models/' + dataset + '/'
+    trial_number = args.mode + "_" + args.s_dset_txt
+    log_output_dir_root = args.output_dir + '/logs/' + trial_number + '/' + str(lr) + str(opt) + args.arch + '/'
+    models_output_dir_root = args.output_dir + '/models/' + trial_number + '/' + str(lr) + str(opt)+ args.arch+ '/'
 
     # print(os.listdir(project_root))
     if args.mode == "train":
@@ -357,14 +380,19 @@ def main():
     config = {}
     no_of_classes = args.no_of_classes
 
-    trial_number = args.mode + "_" + args.s_dset + "_CNN"
+
 
     ####################################
     # Dataset Locations Setup #
     ####################################
-    source_input = {'path': args.s_dset_txt}
-    source_valid_input = {'path': args.sv_dset_txt}
-    test_input = {'path': args.test_dset_txt, 'labelled': True}
+
+    train_path = args.s_dset_txt
+
+
+
+    source_input = {'path': "../../data/txt_files/"+train_path +"/Train.txt"}
+    source_valid_input = {'path': "../../data/txt_files/"+train_path +"/Val.txt"}
+    test_input = {'path': "../../data/txt_files/"+train_path +"/Test.txt", 'labelled': True}
 
 
     if not is_training:
@@ -390,8 +418,8 @@ def main():
 
     print("num_iterations", config["num_iterations"])
 
-    log_output_path = log_output_dir_root + args.arch + '/' +  trial_number + '/'
-    trial_results_path = models_output_dir_root + args.arch + '/' + trial_number + '/'
+    log_output_path = log_output_dir_root
+    trial_results_path = models_output_dir_root
     config["model_path"] = trial_results_path
     config["logs_path"] = log_output_path
     if not os.path.exists(config["logs_path"]):
@@ -402,6 +430,7 @@ def main():
             os.makedirs(config["model_path"] + "/backup/")
 
     config["out_file"] = open(osp.join(config["logs_path"], "log.txt"), "w")
+    config["out_file2"] = open(osp.join(config["logs_path"], "log_best.txt"), "w")
     resize_size = args.image_size
 
     config["prep"] = {'params_source': {"resize_size": resize_size, "crop_size": args.crop_size, "dset": dataset},
