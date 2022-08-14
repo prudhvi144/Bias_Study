@@ -7,6 +7,7 @@
 # --------------------------------------------------------------------------------------------------------------------
 
 #Experment Char
+
 Sampling: ['Proportionate sampling','Disproportionate sampling','Disproportionate sampling with add_data']
 
 Bias_char: ['Sperm Source Race', 'Sperm Source','Sperm Quality (1=Great, 4=Poor)','Egg Source Race', 'Oocyte Source', 'Prior Pregnancies',
@@ -19,6 +20,10 @@ Bias_numerical: ['Ejaculated Semen Volume',
        'WeightPounds', 'BMI', 'MaxFSH', 'AMHLastVal', 'IVF Date', '#Oocytes Retrieved',
        '#Mature Oocytes', '#Normal Fertilization (2PN)',
        'Well #']
+
+
+
+
 #---------------------------------------------------------------------------------------------------------------------
 
 #INITIAL SETTINGS

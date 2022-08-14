@@ -51,13 +51,13 @@ def filter(file_path:str,bias_char:str):
     return trim
 
 def stratfied(dfb,bias_char:str):
-
+    txt = "stratfied"
     x = dfb[bias_char].value_counts(ascending=True)
     a = x.values.tolist()
     b = x.index.values.tolist()
     root = "../../data/raw/"
-    parent_dir = "../../data/txt_files/"
-    test_dir = "../../data/txt_files/Test/"
+    parent_dir = "../../data/txt_files/"+ txt+ "/"
+    test_dir = "../../data/txt_files/"+ txt+ "/"+"Test/"
     path = os.path.join(parent_dir, bias_char)
     if not os.path.exists(path):
         os.makedirs(path)
@@ -68,7 +68,7 @@ def stratfied(dfb,bias_char:str):
     for i in b:
         temp = dfb[(dfb[bias_char] == i)]
         xx = temp[bias_char].value_counts(ascending=True)
-        shuffled = temp.sample(frac=1).reset_index()
+        shuffled = temp.sample(frac=1,random_state=0).reset_index()
         print(len(shuffled.index))
 
         file_name = shuffled.values.tolist()
@@ -79,35 +79,38 @@ def stratfied(dfb,bias_char:str):
         for f in Train_list:
             print(f)
 
-            with open('../../data/txt_files/'+bias_char+"/"  + 'Train' + ".txt", 'a') as the_file:
+            with open(parent_dir+bias_char+"/"  + 'Train' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+bias_char+"/" + 'Train.csv', 'a', newline='',) as file:
+            with open(parent_dir+bias_char+"/" + 'Train.csv', 'a', newline='',) as file:
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
 
         for f in Val_list:
             print(f)
 
-            with open('../../data/txt_files/'+bias_char+"/" + 'Val' + ".txt", 'a') as the_file:
+            with open(parent_dir+bias_char+"/" + 'Val' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+bias_char+"/" + 'Val.csv', 'a', newline='',) as file:
+            with open(parent_dir+bias_char+"/" + 'Val.csv', 'a', newline='',) as file:
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
         for f in Test_list:
             print(f)
-            test_dir = "../../data/txt_files/Test/"
-            path = os.path.join(test_dir, bias_char,str(f[3]))
+            test_dir = "../../data/txt_files/"+txt+'/'+bias_char+"/Test/"
+            path = os.path.join(test_dir,str(f[3]))
+
             if not os.path.exists(path):
                 os.makedirs(path)
-            with open('../../data/txt_files/'+bias_char+"/" + 'Test' + ".txt", 'a') as the_file:
+            with open('../../data/txt_files/'+txt+'/'+bias_char+"/"+ 'Test' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+"Test"+"/" + bias_char +"/"+ str(f[3])+"/" +  'Test' + ".txt", 'a') as the_file:
+            with open('../../data/txt_files/'+txt+"/" + bias_char +"/"+ "Test/"+ str(f[3])+"/" +  'Test' + ".txt", 'a') as the_file:
                 the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
-            with open('../../data/txt_files/'+"Test"+"/" + bias_char + "/" + 'Test.csv', 'a', newline='',) as file:
+            with open('../../data/txt_files/'+ txt +"/Test"+"/" + bias_char + "/" + 'Test.csv', 'a', newline='',) as file:
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
 
 def residual(file_path:str):
+
+
 
 
 
