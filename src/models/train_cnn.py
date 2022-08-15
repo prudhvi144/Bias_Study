@@ -332,7 +332,7 @@ def parge_args():
         trained_model_path= None,
         no_of_layers_freeze=13,
         num_iterations=200000,
-        patience=2000,
+        patience=500,
         test_interval=1,
         snapshot_interval=1,
         output_dir="../../reports"
@@ -371,8 +371,8 @@ def main():
     opt = args.optimizer
     dataset = args.dset
     trial_number = args.mode + "_" + args.s_dset_txt
-    log_output_dir_root = args.output_dir + '/logs/'+args.sampling +"/"+ trial_number + '/' + str(lr)+"_seed"+args.seed+"_"+ str(opt)+"_"+ args.arch + '/'
-    models_output_dir_root = args.output_dir + '/models/'+args.sampling +"/" + trial_number + '/' + str(lr)+"_seed"+args.seed+"_"+ str(opt)+"_"+ args.arch + '/'
+    log_output_dir_root = args.output_dir + '/logs/'+args.sampling +"/"+ trial_number + '/' + str(lr)+"_seed"+str(args.seed)+"_"+ str(opt)+"_"+ args.arch + '/'
+    models_output_dir_root = args.output_dir + '/models/'+args.sampling +"/" + trial_number + '/' + str(lr)+"_seed"+str(args.seed)+"_"+ str(opt)+"_"+ args.arch + '/'
 
     # print(os.listdir(project_root))
     if args.mode == "train":
