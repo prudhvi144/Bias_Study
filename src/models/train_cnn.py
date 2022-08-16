@@ -263,7 +263,7 @@ def parge_args():
 
     parser.add_argument('--seed', type=int)
     parser.add_argument('--dset', type=str, help="The dataset or source dataset used")
-    parser.add_argument('--gpu_id', type=str, nargs='?', default='1', help="device id to run")
+    parser.add_argument('--gpu_id', type=str, nargs='?', default='2', help="device id to run")
 
     parser.add_argument('--lr', type=float)
     parser.add_argument('--arch', type=str)
@@ -307,7 +307,7 @@ def parge_args():
 
 
 
-        s_dset_txt="Sperm Source Race",
+        s_dset_txt="Sperm Quality (1=Great, 4=Poor)",
         sampling= "stratfied",
 
 
@@ -365,7 +365,7 @@ def main():
 
     args = parge_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = '2'
     set_deterministic_settings(seed=args.seed)
     lr = args.lr
     opt = args.optimizer
@@ -493,7 +493,7 @@ def main():
     config["out_file"].flush()
     print("source_path", source_input)
     print("test_path", test_input)
-    # print('GPU', os.environ["CUDA_VISIBLE_DEVICES"], config["gpu"])
+    print('GPU', os.environ["CUDA_VISIBLE_DEVICES"], config["gpu"])
 
     ####################################
     # Dump arguments #

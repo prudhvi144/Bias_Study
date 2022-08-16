@@ -27,27 +27,31 @@ def load_config(config_name):
     return config
 
 def reed_pand(bias_char):
+    sampl = ["residual"]
+    for sampling in sampl:
+        df_train = pd.read_csv('../../data/txt_files/' + sampling + "/" + bias_char + "/" + 'Train.csv', delimiter=',',
+                               encoding='utf-8', header=None)
+        df_train.columns = ["A", "B", "C"]
+        df_val = pd.read_csv('../../data/txt_files/' + sampling + "/" + bias_char + "/" + 'Val.csv', delimiter=',',
+                             encoding='utf-8', header=None)
+        df_val.columns = ["A", "B", "C"]
+        df_test = pd.read_csv('../../data/txt_files/' + sampling + "/" + "Test/" + bias_char + "/" + 'Test.csv',
+                              delimiter=',', encoding='utf-8', header=None)
+        df_test.columns = ["A", "B", "C"]
+        sns.set()
+        print(df_train, df_val, df_test)
+        count_train = df_train["C"].value_counts(ascending=True)
+        count_val = df_val["C"].value_counts(ascending=True)
+        count_test = df_test["C"].value_counts(ascending=True)
+        print(count_train, count_test, count_val)
 
-    df_train = pd.read_csv('../../data/txt_files/'+bias_char+"/" + 'Train.csv',delimiter=',', encoding='utf-8',header=None)
-    df_train.columns = ["A", "B", "C"]
-    df_val = pd.read_csv('../../data/txt_files/' + bias_char + "/" + 'Val.csv', delimiter=',', encoding='utf-8',header=None)
-    df_val.columns = ["A", "B", "C"]
-    df_test = pd.read_csv('../../data/txt_files/'+ "Test/" + bias_char + "/" + 'Test.csv', delimiter=',', encoding='utf-8',header=None)
-    df_test.columns = ["A", "B", "C"]
-    sns.set()
-    print (df_train,df_val,df_test)
-    count_train = df_train["C"].value_counts(ascending=True)
-    count_val = df_val["C"].value_counts(ascending=True)
-    count_test = df_test["C"].value_counts(ascending=True)
-    print(count_train,count_test,count_val)
-
-    plt.hist(df_train['C'])
-    plt.hist(df_val['C'])
-    plt.hist(df_test['C'])
-    plt.ylabel('Frequency count')
-    plt.xlabel('Data');
-    plt.title('My histogram')
-    plt.show()
+        plt.hist(df_train['C'])
+        plt.hist(df_val['C'])
+        plt.hist(df_test['C'])
+        plt.ylabel('Frequency count')
+        plt.xlabel('Data');
+        plt.title('My histogram')
+        plt.show()
 
 
 if __name__ == '__main__':

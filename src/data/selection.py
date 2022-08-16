@@ -108,14 +108,173 @@ def stratfied(dfb,bias_char:str):
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1],f[2],f[3]])
 
-def residual(file_path:str):
+def balanced(dfb,bias_char:str):
+    txt = "balanced"
+    z = dfb[bias_char].value_counts(ascending=True)
+    a = z.values.tolist()
 
+    g = z.iloc[0].tolist()
+
+    df = dfb.groupby(bias_char, group_keys=False).apply(lambda x: x.sample(g,random_state=1))
+
+    y = df[bias_char].value_counts(ascending=True)
+    b = y.index.values.tolist()
+    # data_clean = dfb.drop(df1.index)
+    # z = data_clean[bias_char].value_counts(ascending=True)
+
+    root = "../../data/raw/"
+    parent_dir = "../../data/txt_files/"+ txt+ "/"
+    test_dir = "../../data/txt_files/"+ txt+ "/"+"Test/"
+    path = os.path.join(parent_dir, bias_char)
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+    path = os.path.join(test_dir, bias_char)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    for i in b:
+        temp = df[(df[bias_char] == i)]
+        xx = temp[bias_char].value_counts(ascending=True)
+        shuffled = temp.sample(frac=1,random_state=0).reset_index()
+        print(len(shuffled.index))
+
+        file_name = shuffled.values.tolist()
+        Train_list = shuffled.values.tolist()[0:int(0.7 * len(shuffled.index))]
+        Val_list = shuffled.values.tolist()[int(0.7 * len(shuffled.index)):int(0.9 * len(shuffled.index))]
+        Test_list = shuffled.values.tolist()[int(0.9 * len(shuffled.index)):int(len(shuffled.index))]
+
+        for f in Train_list:
+            print(f)
+
+            with open(parent_dir+bias_char+"/"  + 'Train' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(parent_dir+bias_char+"/" + 'Train.csv', 'a', newline='',) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1],f[2],f[3]])
+
+        for f in Val_list:
+            print(f)
+
+            with open(parent_dir+bias_char+"/" + 'Val' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(parent_dir+bias_char+"/" + 'Val.csv', 'a', newline='',) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1],f[2],f[3]])
+        for f in Test_list:
+            print(f)
+            test_dir = "../../data/txt_files/"+txt+'/'+bias_char+"/Test/"
+            path = os.path.join(test_dir,str(f[3]))
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+            with open('../../data/txt_files/'+txt+'/'+bias_char+"/"+ 'Test' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open('../../data/txt_files/'+txt+"/" + bias_char +"/"+ "Test/"+ str(f[3])+"/" +  'Test' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open('../../data/txt_files/'+ txt +"/Test"+"/" + bias_char + "/" + 'Test.csv', 'a', newline='',) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1],f[2],f[3]])
 
 
 
 
     pass
-def balenced(file_path:str):
+def residual(dfb,bias_char:str):
+    txt = "residual"
+    x = dfb[bias_char].value_counts(ascending=True)
+
+    g = x.iloc[0].tolist()
+
+    df = dfb.groupby(bias_char, group_keys=False).apply(lambda x: x.sample(g,random_state=1))
+    y = df[bias_char].value_counts(ascending=True)
+    cc = y.index.values.tolist()
+    df1 = dfb.drop(df.index)
+    z = df1[bias_char].value_counts(ascending=True)
+    bb = z.index.values.tolist()
+    root = "../../data/raw/"
+    parent_dir = "../../data/txt_files/" + txt + "/"
+    test_dir = "../../data/txt_files/" + txt + "/" + "Test/"
+    path = os.path.join(parent_dir, bias_char)
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+    path = os.path.join(test_dir, bias_char)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    for i in cc:
+        temp = df[(df[bias_char] == i)]
+        xx = temp[bias_char].value_counts(ascending=True)
+        shuffled = temp.sample(frac=1, random_state=0).reset_index()
+        print(len(shuffled.index))
+
+        file_name = shuffled.values.tolist()
+        Train_list = shuffled.values.tolist()[0:int(0.7 * len(shuffled.index))]
+        Val_list = shuffled.values.tolist()[int(0.7 * len(shuffled.index)):int(0.9 * len(shuffled.index))]
+        Test_list = shuffled.values.tolist()[int(0.9 * len(shuffled.index)):int(len(shuffled.index))]
+
+        for f in Train_list:
+            print(f)
+
+            with open(parent_dir + bias_char + "/" + 'Train' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(parent_dir + bias_char + "/" + 'Train.csv', 'a', newline='', ) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1], f[2], f[3]])
+
+        for f in Val_list:
+            print(f)
+
+            with open(parent_dir + bias_char + "/" + 'Val' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(parent_dir + bias_char + "/" + 'Val.csv', 'a', newline='', ) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1], f[2], f[3]])
+        for f in Test_list:
+            print(f)
+            test_dir = "../../data/txt_files/" + txt + '/' + bias_char + "/Test/"
+            path = os.path.join(test_dir, str(f[3]))
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+            with open('../../data/txt_files/' + txt + '/' + bias_char + "/" + 'Test' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(
+                    '../../data/txt_files/' + txt + "/" + bias_char + "/" + "Test/" + str(f[3]) + "/" + 'Test' + ".txt",
+                    'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open('../../data/txt_files/' + txt + "/Test" + "/" + bias_char + "/" + 'Test.csv', 'a',
+                      newline='', ) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1], f[2], f[3]])
+    for i in bb:
+        temp = df[(df[bias_char] == i)]
+        xx = temp[bias_char].value_counts(ascending=True)
+        shuffled = temp.sample(frac=1, random_state=0).reset_index()
+        print(len(shuffled.index))
+
+        file_name = shuffled.values.tolist()
+        Train_list = shuffled.values.tolist()[0:int(0.9 * len(shuffled.index))]
+        Val_list = shuffled.values.tolist()[int(0.9* len(shuffled.index)):int(1 * len(shuffled.index))]
+
+
+        for f in Train_list:
+            print(f)
+
+            with open(parent_dir + bias_char + "/" + 'Train' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(parent_dir + bias_char + "/" + 'Train.csv', 'a', newline='', ) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1], f[2], f[3]])
+
+        for f in Val_list:
+            print(f)
+
+            with open(parent_dir + bias_char + "/" + 'Val' + ".txt", 'a') as the_file:
+                the_file.write(root + str(f[1]) + " " + str(f[2]) + " " + '\n')
+            with open(parent_dir + bias_char + "/" + 'Val.csv', 'a', newline='', ) as file:
+                csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                csv_writer.writerow([f[1], f[2], f[3]])
 
 
 
@@ -139,7 +298,10 @@ if __name__ == '__main__':
     matched = ('../../data/txt_files/Bias_Study.csv')
     for i in config["Bias_char"]:
         dfb = filter(file_path,i)
-        stratfied(dfb,i)
+        # stratfied(dfb,i)
+        # balanced(dfb,i)
+        residual(dfb,i)
+
     #
 
 
