@@ -27,7 +27,7 @@ def load_config(config_name):
     return config
 
 def reed_pand(bias_char):
-    sampl = ["residual"]
+    sampl = ["balanced"]
     for sampling in sampl:
         df_train = pd.read_csv('../../data/txt_files/' + sampling + "/" + bias_char + "/" + 'Train.csv', delimiter=',',
                                encoding='utf-8', header=None)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     print(config)
 
     matched = ('../../data/txt_files/Bias_Study.csv')
-    for i in config["Bias_char"]:
+    for i in config["Bias_numerical"]:
 
         reed_pand(i)
 

@@ -17,11 +17,11 @@ Bias_numerical: ['Ejaculated Semen Volume',
        'Ejaculated Sperm Concentration (Million/ml)',
        'Ejaculated Sperm Motility %', 'Ejaculated Total Motile Count',
        'Gravidity', 'HeightInches',
-       'WeightPounds', 'BMI', 'MaxFSH', 'AMHLastVal', 'IVF Date', '#Oocytes Retrieved',
+       'WeightPounds', 'BMI', 'MaxFSH', 'AMHLastVal', '#Oocytes Retrieved',
        '#Mature Oocytes', '#Normal Fertilization (2PN)',
        'Well #']
 
-
+removed: [ 'IVF Date']
 
 
 #---------------------------------------------------------------------------------------------------------------------
