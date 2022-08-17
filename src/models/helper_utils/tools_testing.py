@@ -213,7 +213,7 @@ def class_5_to2(all_label_numpy,predict_numpy):
 
     return cm_bnb, acc
 
-def validation_loss(loader, model, num_classes, logs_path, data_name='valid_source', dset="",num_iterations=0, is_training=True,
+def validation_loss(loader,sampling, cat , model, num_classes, logs_path, data_name='valid_source',dset="",num_iterations=0, is_training=True,
                     ret_cm=False):
     start_test = True
     with torch.no_grad():
@@ -249,18 +249,18 @@ def validation_loss(loader, model, num_classes, logs_path, data_name='valid_sour
     all_output_numpy = all_output.numpy()
     predict_numpy = predict.numpy()
 
-    with open(logs_path + '/'+dset+"_" + data_name + "_"+ (str(num_iterations) if is_training else "Final") + '_confidence_values_.csv',
-              mode='w') as file:
-        csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-        csv_writer.writerow(['Image_Name', 'Label', 'Prediction'] + list(map(lambda x: 'class_' + str(x) + '_conf', np.arange(
-            num_classes))))  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
-
-        for value in range(len(all_output_numpy)):
-            csv_writer.writerow(
-                [ all_path[value],
-                 int(all_label[value].item()), predict_numpy[value]] +
-                list(map(lambda x: all_output_numpy[value][x], np.arange(num_classes))))
+    # with open(logs_path + '/'+dset+"_" + data_name + "_"+ (str(num_iterations) if is_training else "Final") + '_confidence_values_.csv',
+    #           mode='w') as file:
+    #     csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #
+    #     csv_writer.writerow(['Image_Name', 'Label', 'Prediction'] + list(map(lambda x: 'class_' + str(x) + '_conf', np.arange(
+    #         num_classes))))  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
+    #
+    #     for value in range(len(all_output_numpy)):
+    #         csv_writer.writerow(
+    #             [ all_path[value],
+    #              int(all_label[value].item()), predict_numpy[value]] +
+    #             list(map(lambda x: all_output_numpy[value][x], np.arange(num_classes))))
         # csv_writer.writerow(['Image_Name', 'Label', 'Prediction'])  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
         #
         # for value in range(len(all_output_numpy)):
@@ -268,6 +268,7 @@ def validation_loss(loader, model, num_classes, logs_path, data_name='valid_sour
 
     c = precision_recall_fscore_support(all_label, torch.squeeze(predict).float(),average='weighted')
     conf_mat = confusion_matrix(all_label, torch.squeeze(predict).float())
+    cof = conf_mat.flatten()
     print (c)
     print(conf_mat)
     print(val_accuracy)
@@ -284,6 +285,13 @@ def validation_loss(loader, model, num_classes, logs_path, data_name='valid_sour
 
     if ret_cm:
         val_info = {**val_info, "conf_mat": conf_mat}
+
+    with open(logs_path + '/' + 'results.csv',
+              mode='a') as file:
+        csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow([sampling,cat, (val_accuracy) , (val_loss) , (c[0]) ,(c[1]) , (c[2]) , cof])
+
     return val_info
 
 def Entropy(input_):

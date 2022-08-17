@@ -248,7 +248,7 @@ def residual(dfb,bias_char:str):
                 csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 csv_writer.writerow([f[1], f[2], f[3]])
     for i in bb:
-        temp = df[(df[bias_char] == i)]
+        temp = df1[(df1[bias_char] == i)]
         xx = temp[bias_char].value_counts(ascending=True)
         shuffled = temp.sample(frac=1, random_state=0).reset_index()
         print(len(shuffled.index))
@@ -299,7 +299,7 @@ if __name__ == '__main__':
     for i in config["Bias_char"]:
         dfb = filter(file_path,i)
         # stratfied(dfb,i)
-        # balanced(dfb,i)
+        balanced(dfb,i)
         residual(dfb,i)
 
     #

@@ -19,6 +19,7 @@ import numpy as np
 import csv
 import yaml
 import numpy as np
+from testing import main
 CONFIG_PATH = "../data/"
 
 def load_config(config_name):
@@ -28,7 +29,7 @@ def load_config(config_name):
     return config
 
 def get_model(file,sampling):
-
+    print (file)
     #read the files in a folder
     path = "../../reports/logs/"+ sampling+ "/train_"+file+"/"
     dir_list = os.listdir(path)
@@ -36,7 +37,7 @@ def get_model(file,sampling):
     a = []
     dicts = {}
     for files in dir_list:
-        print(files)
+        # print(files)
         string1 ="Final Model | Val loss:"
         with open(os.path.join(path, files ,log),"r") as f:
             for line in f:
@@ -83,9 +84,11 @@ if __name__ == '__main__':
     config = load_config("../data/my_config.yaml")
     print(config)
     for i in config["Bias_char"]:
-        p = get_data(i,config["Sampling"][0])
-        for j in p:
+        p = get_model(i, config["Sampling"][0])
+        x = get_data(i,config["Sampling"][0])
+        for j in x:
             print(j)
+            main(str(p),j)
 
 
 

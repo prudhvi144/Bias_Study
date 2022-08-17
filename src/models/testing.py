@@ -85,7 +85,7 @@ def network_setup(config):
     return base_network, schedule_param, lr_scheduler, optimizer
 
 
-def test(config, dset_loaders, model_path_for_testing=None):
+def test(config,samp,cat, dset_loaders, model_path_for_testing=None):
     if model_path_for_testing:
         model = torch.load(model_path_for_testing)
     else:
@@ -94,7 +94,7 @@ def test(config, dset_loaders, model_path_for_testing=None):
 
 
 
-    test_info = validation_loss(dset_loaders, model, data_name='test',dset=config['dataset'],
+    test_info = validation_loss(dset_loaders,samp,cat, model, data_name='test',dset=config['dataset'],
                                 num_classes=config["network"]["params"]["class_num"],
                                 logs_path=config['logs_path'], is_training=config['is_training'])
 
@@ -204,15 +204,13 @@ def set_deterministic_settings(seed):
     torch.backends.cudnn.benchmark = False
 
 
-def main():
+def main(model_path, path):
     ####################################
     # Default Project Folders#
     ####################################
 
 
     project_root = "../../"
-    data_root = project_root + "data/"
-    models_root = project_root + "models/"
 
     now = datetime.now()
     timestamp = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -220,13 +218,16 @@ def main():
 
     args = parge_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
-    # os.environ["CUDA_VISIBLE_DEVICES"] = '2'
     set_deterministic_settings(seed=args.seed)
     lr = args.lr
     opt = args.optimizer
     dataset = args.dset
     trial_number = args.mode + "_" + args.s_dset_txt
-    log_output_dir_root = args.output_dir + '/logs/'+args.sampling +"/"+ trial_number + '/' + str(lr)+"_seed"+str(args.seed)+"_"+ str(opt)+"_"+ args.arch + '/'
+
+    samp = path.split("/")[4]
+    cat = path.split("/")[5]
+    sub_cat = path.split("/")[7]
+    log_output_dir_root = args.output_dir + '/testing/'+samp + '/'
     # models_output_dir_root = args.output_dir + '/models/'+args.sampling +"/" + trial_number + '/' + str(lr)+"_seed"+str(args.seed)+"_"+ str(opt)+"_"+ args.arch + '/'
 
     # print(os.listdir(project_root))
@@ -249,13 +250,13 @@ def main():
 
 
 
-    source_input = {'path': "../../data/txt_files/"+ sampling+ '/'+train_path +"/Train.txt"}
+    source_input = {'path': "../../data/txt_files/"+ samp + '/'+cat +"/Train.txt"}
     source_valid_input = {'path': "../../data/txt_files/"+sampling+ "/"+train_path +"/Val.txt"}
-    test_input = {'path': "../../data/txt_files/"+sampling+ "/"+train_path +"/Test.txt", 'labelled': True}
+    test_input = {'path': path , 'labelled': True}
 
 
 
-    model_path_for_testing = args.trained_model_path
+    model_path_for_testing = model_path
 
     config['timestamp'] = timestamp
     config['trial_number'] = trial_number
@@ -284,7 +285,7 @@ def main():
 
 
     config["out_file"] = open(osp.join(config["logs_path"], "log.txt"), "w")
-    config["out_file2"] = open(osp.join(config["logs_path"], "log_best.txt"), "w")
+
     resize_size = args.image_size
 
     config["prep"] = {'params_source': {"resize_size": resize_size, "crop_size": args.crop_size, "dset": dataset},
@@ -348,8 +349,8 @@ def main():
     ####################################
     # Dump arguments #
     ####################################
-    with open(config["logs_path"] + "args.yml", "w") as f:
-        yaml.dump(args, f)
+    # with open(config["logs_path"] + "args.yml", "w") as f:
+    #     yaml.dump(args, f)
 
     dset_loaders = data_setup(config)
 
@@ -359,7 +360,7 @@ def main():
     print("=" * 50)
     print()
 
-    test(config, dset_loaders, model_path_for_testing=model_path_for_testing)
+    test(config,cat,sub_cat, dset_loaders, model_path_for_testing=model_path_for_testing)
 
 
 if __name__ == "__main__":
