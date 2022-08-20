@@ -7,9 +7,9 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 from scipy.spatial.distance import cdist
-from sklearn.metrics import confusion_matrix,precision_recall_fscore_support
+from sklearn.metrics import confusion_matrix,precision_recall_fscore_support,auc
 import matplotlib.pyplot as plt
-
+import sklearn.metrics as metrics
 
 
 # def comepute_class_weight_pytorch():
@@ -213,7 +213,7 @@ def class_5_to2(all_label_numpy,predict_numpy):
 
     return cm_bnb, acc
 
-def validation_loss(loader,sampling, cat , model, num_classes, logs_path, data_name='valid_source',dset="",num_iterations=0, is_training=True,
+def validation_loss(loader,p,sampling, cat , model, num_classes, logs_path, data_name='valid_source',data_name1='valid_source',dset="",num_iterations=0, is_training=True,
                     ret_cm=False):
     start_test = True
     with torch.no_grad():
@@ -249,7 +249,64 @@ def validation_loss(loader,sampling, cat , model, num_classes, logs_path, data_n
     all_output_numpy = all_output.numpy()
     predict_numpy = predict.numpy()
 
-    # with open(logs_path + '/'+dset+"_" + data_name + "_"+ (str(num_iterations) if is_training else "Final") + '_confidence_values_.csv',
+    # with open('/home/venom/PycharmProjects/Bias_Embryo/Bias_Study/reports/testing/residual/results1.csv',
+    #           mode='a') as file:
+    #     csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    # #
+    # #     csv_writer.writerow(['Image_Name', 'Label', 'Prediction'] + list(map(lambda x: 'class_' + str(x) + '_conf', np.arange(
+    # #         num_classes))))  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
+    # #
+    # #     for value in range(len(all_output_numpy)):
+    # #         csv_writer.writerow(
+    # #             [ all_path[value],
+    # #              int(all_label[value].item()), predict_numpy[value]] +
+    # #             list(map(lambda x: all_output_numpy[value][x], np.arange(num_classes))))
+    #     csv_writer.writerow(['Image_Name', 'Label', 'Prediction'])  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
+    #
+    #     for value in range(len(all_output_numpy)):
+    #         csv_writer.writerow([all_path[value], int(all_label[value].item()), predict_numpy[value] , all_output_numpy[value]])
+
+    c = precision_recall_fscore_support(all_label, torch.squeeze(predict).float(),average='weighted')
+    conf_mat = confusion_matrix(all_label, torch.squeeze(predict).float(),labels=[0, 1])
+    cof = conf_mat.flatten()
+    tn, fp, fn, tp = confusion_matrix(all_label, torch.squeeze(predict).float()).ravel()
+    print (c)
+    print(conf_mat)
+    print(val_accuracy)
+
+    start_test = True
+    with torch.no_grad():
+        iter_test1 = iter(loader[data_name1])
+        for i in range(len(loader[data_name1])):
+            data1 = iter_test1.next()
+            inputs1 = data1[0]
+            labels1 = data1[1]
+            paths1 = data1[2]
+            inputs1 = inputs1.cuda()
+            # labels1 = labels1.cuda()
+            _, raw_outputs1 = model(inputs1)
+            outputs1 = nn.Softmax(dim=1)(raw_outputs1)
+            if start_test:
+                all_output1 = outputs1.cpu()
+                all_label1  = labels1
+                all_path1   = paths1
+                start_test = False
+            else:
+                all_output1 = torch.cat((all_output1, outputs1.cpu()), 0)
+                all_label1 = torch.cat((all_label1, labels1), 0)
+                all_path1 = all_path1 + paths1
+    val_loss1 = nn.CrossEntropyLoss()(all_output1, all_label1)
+
+    val_loss1 = val_loss1.numpy().item()
+
+    all_output1 = all_output1.float()
+    _, predict1 = torch.max(all_output1, 1)
+
+    all_label1 = all_label1.float()
+    val_accuracy1 = torch.sum(torch.squeeze(predict1).float() == all_label1).item() / float(all_label1.size()[0])
+    all_output_numpy1 = all_output1.numpy()
+    predict_numpy1 = predict1.numpy()
+    # with open('/home/venom/PycharmProjects/Bias_Embryo/Bias_Study/reports/testing/residual/results2.csv',
     #           mode='w') as file:
     #     csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     #
@@ -261,17 +318,28 @@ def validation_loss(loader,sampling, cat , model, num_classes, logs_path, data_n
     #             [ all_path[value],
     #              int(all_label[value].item()), predict_numpy[value]] +
     #             list(map(lambda x: all_output_numpy[value][x], np.arange(num_classes))))
-        # csv_writer.writerow(['Image_Name', 'Label', 'Prediction'])  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
-        #
-        # for value in range(len(all_output_numpy)):
-        #     csv_writer.writerow([all_path[value], int(all_label[value].item()), predict_numpy[value]])
+    #     csv_writer.writerow(['Image_Name', 'Label', 'Prediction'])  # ['Image_Name', 'Prediction', 'class_0_conf', 'class_1_conf']
+    #
+    #     for value1 in range(len(all_output_numpy1)):
+    #         csv_writer.writerow([all_path1[value1], int(all_label1[value1].item()), predict_numpy1[value1] , all_output_numpy1[value1]])
 
-    c = precision_recall_fscore_support(all_label, torch.squeeze(predict).float(),average='weighted')
-    conf_mat = confusion_matrix(all_label, torch.squeeze(predict).float())
-    cof = conf_mat.flatten()
-    print (c)
-    print(conf_mat)
-    print(val_accuracy)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     val_info = {"val_accuracy": val_accuracy, "val_loss": val_loss , "cm" : conf_mat  , "pression": c[0], "recall": c[1] , "f-score": c[0]}
 
     if num_classes == 5:
@@ -286,11 +354,22 @@ def validation_loss(loader,sampling, cat , model, num_classes, logs_path, data_n
     if ret_cm:
         val_info = {**val_info, "conf_mat": conf_mat}
 
-    with open(logs_path + '/' + 'results.csv',
+    fpr, tpr, thresholds = metrics.roc_curve(all_label, torch.squeeze(predict).float())
+    auc = metrics.auc(fpr, tpr)
+
+
+
+
+
+
+
+
+
+    with open(logs_path + '/' +p+ '_results.csv',
               mode='a') as file:
         csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        csv_writer.writerow([sampling,cat, (val_accuracy) , (val_loss) , (c[0]) ,(c[1]) , (c[2]) , cof])
+        csv_writer.writerow([sampling,cat, (val_accuracy), val_accuracy1 , (val_loss) , (c[0]) ,(c[1]) , (c[2])  , tn , fp , fn , tp , auc])
 
     return val_info
 

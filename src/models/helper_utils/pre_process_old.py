@@ -186,7 +186,7 @@ def image_test(resize_size=224, crop_size=224, dset=""):
         ResizeImage(resize_size),
         # PlaceCrop(crop_size, start_center, start_center),
         transforms.ToTensor(),
-        transforms.RandomRotation(degrees=(89, 90)),
+        # transforms.RandomRotation(degrees=(89, 90)),
 
         # normalize
     ])

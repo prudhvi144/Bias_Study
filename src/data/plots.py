@@ -89,7 +89,7 @@ if __name__ == '__main__':
     print(config)
 
     matched = ('../../data/txt_files/Bias_Study.csv')
-    # for i in config["Bias_char"]:
-    #     reed_pand(i)
-    for i in config["Bias_numerical"]:
-        reed_pand_bins(i)
+    for i in config["Bias_char"]:
+        reed_pand(i)
+    # for i in config["Bias_numerical"]:
+    #     reed_pand_bins(i)

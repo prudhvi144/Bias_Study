@@ -300,15 +300,15 @@ def parge_args():
     parser.add_argument('--output_dir', type=str)
 
     parser.set_defaults(
-        mode="train",
+        mode="test",
         seed=0,
         gpu_id="1",
         dset="Bias_study",
 
 
 
-        s_dset_txt="Sperm Quality (1=Great, 4=Poor)",
-        sampling= "stratfied",
+        s_dset_txt="Transfer Type",
+        sampling= "residual",
 
 
         s_dset="D",
@@ -396,11 +396,11 @@ def main():
 
     source_input = {'path': "../../data/txt_files/"+ sampling+ '/'+train_path +"/Train.txt"}
     source_valid_input = {'path': "../../data/txt_files/"+sampling+ "/"+train_path +"/Val.txt"}
-    test_input = {'path': "../../data/txt_files/"+sampling+ "/"+train_path +"/Test.txt", 'labelled': True}
+    test_input = {'path': "/home/venom/PycharmProjects/Bias_Embryo/Bias_Study/data/txt_files/residual/Transfer Type/Test/FET/Test.txt", 'labelled': True}
 
 
     if not is_training:
-        model_path_for_testing = models_root + args.dset + '/train_' + args.s_dset +"_CNN" + "/best_model.pth.tar"
+        model_path_for_testing = "../../reports/models/residual/train_Transfer Type/0.001_seed0_SGD_Xception/best_model.pth.tar"
 
         if args.trained_model_path:
             model_path_for_testing = args.trained_model_path

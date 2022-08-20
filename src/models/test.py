@@ -83,12 +83,41 @@ if __name__ == '__main__':
 
     config = load_config("../data/my_config.yaml")
     print(config)
-    for i in config["Bias_char"]:
-        p = get_model(i, config["Sampling"][0])
-        x = get_data(i,config["Sampling"][0])
+
+    # for samp in config['Sampling_char']:
+    #    for i in config["Bias_char"]:
+    #     p = get_model(i, samp)
+    #     x = get_data(i,samp)
+    #     for j in x:
+    #         print(j)
+    #         main(str(p),j)
+    # samp = 'stratfied_bins'
+    # samp = 'stratfied'
+    samp = 'balanced_bins'
+    # samp = 'residual'
+    # samp = 'residual_bins'
+    # samp = 'residual'
+    logs_path = "../../reports/testing/"+ samp
+
+    if not os.path.exists(logs_path):
+        os.makedirs(logs_path)
+
+    with open(logs_path + '/' +samp+ '_results.csv',
+              mode='w') as file:
+        csv_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(["Categories","Sub_Categories", "Accuracy", "Reference Accuracy" , "Loss" , "Precision","Recall","F1-score", "tn" , "fp" , "fn ", "tp" ,"AUC"])
+
+    for i in config["Bias_numerical"]:
+
+        try:
+            p = get_model(i, samp)
+        except:
+            pass
+
+
+        x = get_data(i, samp)
         for j in x:
             print(j)
-            main(str(p),j)
-
-
+            main(str(p), j)
 

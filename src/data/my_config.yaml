@@ -8,20 +8,21 @@
 
 #Experment Char
 
-Sampling: ['stratfied']
+Sampling_char: ['stratfied', 'residual','balanced']
+Sampling_bins: ['stratfied_bins', 'residual_bins','balanced_bins']
 
 Bias_char: ['Sperm Source Race', 'Sperm Source','Sperm Quality (1=Great, 4=Poor)','Egg Source Race', 'Oocyte Source', 'Prior Pregnancies',
       'Cycle STIMULATION Regimen', 'Insemination Method','Transfer Type']
 
 Bias_numerical: ['Ejaculated Semen Volume',
-       'Ejaculated Sperm Concentration (Million/ml)',
+
        'Ejaculated Sperm Motility %', 'Ejaculated Total Motile Count',
-       'Gravidity', 'HeightInches',
+        'HeightInches',
        'WeightPounds', 'BMI', 'MaxFSH', 'AMHLastVal', '#Oocytes Retrieved',
        '#Mature Oocytes', '#Normal Fertilization (2PN)',
        'Well #']
 
-removed: [ 'IVF Date','DIAGNOSIS']
+removed: [ 'IVF Date','DIAGNOSIS','Ejaculated Sperm Concentration (Million','Gravidity',]
 
 
 #---------------------------------------------------------------------------------------------------------------------

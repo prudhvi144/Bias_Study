@@ -50,6 +50,7 @@ def data_setup(config):
     prep_dict = {}
     prep_config = config["prep"]
     prep_dict["test"] = prep.image_test(**config["prep"]['params_test'])
+    prep_dict["test1"] = prep.image_test(**config["prep"]['params_test'])
     ## prepare data
     dsets = {}
     dset_loaders = {}
@@ -58,6 +59,10 @@ def data_setup(config):
     dsets["test"] = ImageList(open(data_config["test"]["list_path"]).readlines(),
                               transform=prep_dict["test"], labelled=data_config["test"]["labelled"])
     dset_loaders["test"] = DataLoader(dsets["test"], batch_size=test_bs, \
+                                      shuffle=False, num_workers=4)
+    dsets["test1"] = ImageList(open(data_config["test1"]["list_path"]).readlines(),
+                              transform=prep_dict["test1"], labelled=data_config["test1"]["labelled"])
+    dset_loaders["test1"] = DataLoader(dsets["test1"], batch_size=test_bs, \
                                       shuffle=False, num_workers=4)
 
     return dset_loaders
@@ -85,7 +90,7 @@ def network_setup(config):
     return base_network, schedule_param, lr_scheduler, optimizer
 
 
-def test(config,samp,cat, dset_loaders, model_path_for_testing=None):
+def test(config,p,samp,cat, dset_loaders, model_path_for_testing=None):
     if model_path_for_testing:
         model = torch.load(model_path_for_testing)
     else:
@@ -94,7 +99,7 @@ def test(config,samp,cat, dset_loaders, model_path_for_testing=None):
 
 
 
-    test_info = validation_loss(dset_loaders,samp,cat, model, data_name='test',dset=config['dataset'],
+    test_info = validation_loss(dset_loaders,p,samp,cat, model, data_name='test',data_name1='test1',dset=config['dataset'],
                                 num_classes=config["network"]["params"]["class_num"],
                                 logs_path=config['logs_path'], is_training=config['is_training'])
 
@@ -250,8 +255,9 @@ def main(model_path, path):
 
 
 
-    source_input = {'path': "../../data/txt_files/"+ samp + '/'+cat +"/Train.txt"}
+    source_input = {'path': "../../data/txt_files/"+ samp + '/'+cat +"/Test.txt"}
     source_valid_input = {'path': "../../data/txt_files/"+sampling+ "/"+train_path +"/Val.txt"}
+
     test_input = {'path': path , 'labelled': True}
 
 
@@ -333,7 +339,7 @@ def main(model_path, path):
                                "lr_param": {"lr": args.lr, "gamma": args.gamma, "power": args.power}}
 
     config["dataset"] = dataset
-    config["data"] = {"source": {"list_path": source_input['path'], "batch_size": args.batch_size},
+    config["data"] = {"test1": {"list_path": source_input['path'], "batch_size": args.batch_size_test,"labelled": test_input['labelled']},
                       "test": {"list_path": test_input['path'], "batch_size": args.batch_size_test,
                                "labelled": test_input['labelled']},
                       "valid_source": {"list_path": source_valid_input['path'], "batch_size": args.batch_size}}
@@ -360,7 +366,7 @@ def main(model_path, path):
     print("=" * 50)
     print()
 
-    test(config,cat,sub_cat, dset_loaders, model_path_for_testing=model_path_for_testing)
+    test(config,samp,cat,sub_cat, dset_loaders, model_path_for_testing=model_path_for_testing)
 
 
 if __name__ == "__main__":
